@@ -1,0 +1,49 @@
+1IGc1ADVQBsnfrom googleapiclient.discovery import build
+from google.oauth2 import service_account
+from googleapiclient.http import MediaFileUpload
+
+# Path to your service account JSON key file
+SERVICE_ACCOUNT_FILE = 'keys.json'
+
+# Define the scopes for Google Drive API
+SCOPES = ['https://www.googleapis.com/auth/drive']
+
+def authenticate():
+    """
+    Authenticates with the service account credentials.
+    """
+    creds = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+    return creds
+
+creds = authenticate()
+
+def upload_to_drive(file_path, parent_folder_id):
+    """
+    Uploads a file to Google Drive.
+    Args:
+        file_path (str): Path to the file to be uploaded.
+        parent_folder_id (str): ID of the parent folder in Google Drive.
+    """
+    service = build('drive', 'v3', credentials=creds)
+    
+    file_metadata = {
+        'name': 'Hello',  # Change the file name as needed
+        'parents': [parent_folder_id]
+    }
+    
+    media = MediaFileUpload(file_path)
+    
+    file = service.files().create(
+        body=file_metadata,
+        media_body=media,
+        fields='id'
+    ).execute()
+
+    print(f"File uploaded successfully! File ID: {file.get('id')}")
+
+# Example usage
+if __name__ == "__main__":
+    file_path = '/path/to/your/file.txt'  # Replace with the actual file path
+    parent_folder_id = 'your_parent_folder_id'  # Replace with the desired parent folder ID
+    upload_to_drive(file_path, parent_folder_id)
+DhWCwCJ64jFAEFhA791By
