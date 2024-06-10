@@ -22,4 +22,4 @@ def list_files():
         return items
 
 # Call the function
-list_files()
+# list_files()

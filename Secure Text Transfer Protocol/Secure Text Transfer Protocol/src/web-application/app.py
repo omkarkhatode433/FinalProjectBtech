@@ -89,20 +89,30 @@ def call_page_upload():
 '''
 @app.route('/public-key-directory/retrieve/key/<username>')
 def download_public_key(username):
-	for root,dirs,files in os.walk('./media/public-keys/'):
+	print(username)
+	for root, dirs, files in os.walk('./media/public-keys/'):
 		for file in files:
 			list = file.split('-')
 			if list[0] == username:
-				filename = UPLOAD_KEY+file
-				return send_file(filename, attachment_filename='publicKey.pem',as_attachment=True)
+				filename = os.path.join(UPLOAD_KEY, file)
+				print(filename)
+				return send_file(filename, as_attachment=True)
+	return render_template('file-list.html', msg='Public key not found.')
+
 
 @app.route('/file-directory/retrieve/file/<filename>')
-def download_file(filename):
-	filepath = UPLOAD_FOLDER+filename
-	if(os.path.isfile(filepath)):
-		return send_file(filepath, attachment_filename='fileMessage-thrainSecurity.txt',as_attachment=True)
-	else:
-		return render_template('file-list.html',msg='An issue encountered, our team is working on that')
+def download(filename):
+    # Construct the full file path
+    file_path = os.path.join(UPLOAD_FOLDER, filename)
+    if os.path.isfile(file_path):
+        try:
+            return send_file(file_path, as_attachment=True)
+        except Exception as e:
+            return f'An issue encountered: {str(e)}'
+    else:
+        return 'File not found.'
+
+
 
 '''
 -----------------------------------------------------------
